@@ -1,7 +1,22 @@
 {% extends 'header.html' %}
+{% block content %}
 
 <section class="main-content">
-    <!-- Main content goes here -->
+    <div class="post">
+        <h2>Title of the Post</h2>
+        <p class="author">Posted by <span>Username</span></p>
+        <p class="timestamp">Posted on January 1, 2024</p>
+        <p class="content">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
+    </div>
+
+    <div class="post">
+        <h2>Title of Another Post</h2>
+        <p class="author">Posted by <span>AnotherUser</span></p>
+        <p class="timestamp">Posted on February 15, 2024</p>
+        <p class="content">Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Morbi lacinia molestie dui.</p>
+    </div>
 </section>
 
+
+{% endblock  content %}
 {% extends 'footer.html' %}
