@@ -34,3 +34,8 @@ Responsiveness and interactivity of the header menu.
 Scrolling through the page layout.
 Dynamic interaction effects for buttons.
 
+
+Importnt links:
+GitHub repository: https://github.com/KaptainNexus/ForumSphere.git
+Spring documentation: https://drive.google.com/drive/folders/1pPdObXO2Ec9fIVe7zBQryIQWuzKc6HdW?usp=drive_link
+GitHub Scrum: https://github.com/users/KaptainNexus/projects/1
