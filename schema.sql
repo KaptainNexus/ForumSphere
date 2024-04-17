@@ -1,3 +1,6 @@
+
+
+User
 CREATE TABLE Users
 (
     user_id    SERIAL PRIMARY KEY,
@@ -11,11 +14,12 @@ CREATE TABLE Images (
     image_id SERIAL PRIMARY KEY,
     timestamp TIMESTAMP NOT NULL,
     caption VARCHAR(255),
-    author_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
     image_link VARCHAR(255) NOT NULL,
     pinned BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_user
-        FOREIGN KEY Users (user_id)
+        FOREIGN KEY Users(user_id)
+        REFERENCES Users(user_id)
         ON DELETE CASCADE
 );
 
@@ -25,8 +29,9 @@ CREATE TABLE Posts
     user_id    INTEGER REFERENCES Users(user_id),
     title      VARCHAR(255) NOT NULL,
     content    TEXT NOT NULL,
-    last_modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    last_modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     image_id INTEGER REFERENCES Images(image_id), 
+    tag_id INTEGER REFERENCES Tags(tag_id),
     difficulty INTEGER NOT NULL
 );
 
@@ -53,12 +58,13 @@ CREATE TABLE Follows
     followee_id INTEGER REFERENCES Users(user_id)
 );
 
-CREATE TYPE tag AS ENUM ('Begginer', 'Intermediate', 'Advanced', 'Expert', 'Gaming', 'Fintech', 'WEB3', 'Managment/Communications', '
-Systems', 'Cyber Security', 'Data Sci/AI/ML', 'Blockchain','Metaverse', 'Cloud Computing', 'Networks', 'Operating Systems', 'Hardware/Firmware');
+CREATE TYPE tag AS ENUM ('Beginner', 'Intermediate', 'Advanced', 'Expert', 'Gaming', 'Fintech', 'WEB3', 'Managment/Communications', 'Systems',
+'Cyber Security', 'Data Sci/AI/ML', 'Blockchain','Metaverse', 'Cloud Computing', 'Networks', 'Operating Systems', 'Hardware/Firmware');
 
 CREATE TABLE Tags
 (
     tag_id SERIAL PRIMARY KEY,
+    tag_name VARCHAR(255) UNIQUE NOT NULL,
     tag_type tag
 );
 
@@ -67,6 +73,13 @@ CREATE TABLE Friendship
     friendship_id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES Users(user_id),
     friend_id INTEGER REFERENCES Users(user_id)
+);
+
+CREATE TABLE PostTags
+(
+    post_id INTEGER REFERENCES Posts(post_id),
+    tag_id INTEGER REFERENCES Tags(tag_id),
+    PRIMARY KEY (post_id, tag_id)
 );
 
 -- Figure out what the differnce between post_data and last_modified_at is
