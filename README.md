@@ -39,3 +39,28 @@ Importnt links:
 GitHub repository: https://github.com/KaptainNexus/ForumSphere.git
 Spring documentation: https://drive.google.com/drive/folders/1pPdObXO2Ec9fIVe7zBQryIQWuzKc6HdW?usp=drive_link
 GitHub Scrum: https://github.com/users/KaptainNexus/projects/1
+
+
+
+        <div class="list-group-flush">
+            <a href="#" class="list-group-item list-group-item-action">Home</a>
+            <a href="#" class="list-group-item list-group-item-action">Polular</a>
+            <a href="#" class="list-group-item list-group-item-action "></a>
+    
+            <a href="#" class="list-group-item list-group-item-action">Gaming</a>
+            <a href="#" class="list-group-item list-group-item-action">Sports</a>
+            <a href="#" class="list-group-item list-group-item-action">Business</a>
+            <a href="#" class="list-group-item list-group-item-action">Crypto</a>
+            <a href="#" class="list-group-item list-group-item-action disabled">Television</a>
+            <a href="#" class="list-group-item list-group-item-action">Celebrity</a>
+            <a href="#" class="list-group-item list-group-item-action"></a>
+    
+            <a href="#" class="list-group-item list-group-item-action">About Sphere</a>
+            <a href="#" class="list-group-item list-group-item-action">Advertise</a>
+            <a href="#" class="list-group-item list-group-item-action disabled">Help</a>
+            <a href="#" class="list-group-item list-group-item-action">Blog</a>
+            <a href="#" class="list-group-item list-group-item-action">Careers</a>
+            <a href="#" class="list-group-item list-group-item-action disabled">Press</a>
+            <a href="#" class="list-group-item list-group-item-action"></a>
+    
+        </div>    
