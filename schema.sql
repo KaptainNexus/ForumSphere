@@ -5,6 +5,7 @@ CREATE TABLE Users
 (
     user_id    SERIAL PRIMARY KEY,
     email      VARCHAR(255) UNIQUE NOT NULL,
+    username   VARCHAR(255) UNIQUE NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     last_name  VARCHAR(255) NOT NULL,
     password   VARCHAR(255) NOT NULL
@@ -82,6 +83,3 @@ CREATE TABLE PostTags
     PRIMARY KEY (post_id, tag_id)
 );
 
--- Figure out what the differnce between post_data and last_modified_at is
--- How to add the tags to the post table, might not need to Tags table and 
--- just the tag type that we can use in the post table not sure
