@@ -41,11 +41,11 @@ def search():
 
     conn.close()
 
-    return render_template('pages/components/_search.html',post_results=post_results, user_results=user_results)
+    return render_template('pages/components/_search_.html',post_results=post_results, user_results=user_results)
 
 @app.get('/secret')
 def secret():
-    return render_template('pages/secret.html')
+    return render_template('pages/_secret_.html')
 
 @app.post('/signup')
 def signup():
