@@ -12,7 +12,7 @@ def get_user_by_username(username: str) -> dict[str, Any] | None:
                         SELECT
                             user_id,
                             username,
-                            password AS hashed_password
+                            password
                         FROM
                             Users
                         WHERE username = %s
@@ -28,7 +28,7 @@ def get_user_by_id(user_id: int) -> dict[str, Any] | None:
                         SELECT
                             user_id,
                             username,
-                            password AS hashed_password
+                            password
                         FROM
                             Users
                         WHERE user_id = %s
@@ -39,19 +39,19 @@ def get_user_by_id(user_id: int) -> dict[str, Any] | None:
 def create_user(username: str, hashed_password: str) -> int:
     pool = get_pool()
     with pool.connection() as conn:
-        with conn.cursor() as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute('''
                         INSERT INTO Users (username or email, password)
                         VALUES (%s, %s)
                         RETURNING user_id
                         ''', [username, hashed_password])
-            user_id = cur.fetchone()[0]
+            user_id = cur.fetchone().get('user_id')
             return user_id
         
-def update_user_password(user_id: int, hashed_password: str) -> None:
+def update_password(user_id: int, hashed_password: str) -> None:
     pool = get_pool()
     with pool.connection() as conn:
-        with conn.cursor() as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute('''
                         UPDATE Users
                         SET password = %s
@@ -61,8 +61,10 @@ def update_user_password(user_id: int, hashed_password: str) -> None:
 def delete_user(user_id: int) -> None:
     pool = get_pool()
     with pool.connection() as conn:
-        with conn.cursor() as cur:
+        with conn.cursor(row_factory=dict_row) as cur:
             cur.execute('''
                         DELETE FROM Users
                         WHERE user_id = %s
                         ''', [user_id])
+            
+# error handling in all methods 

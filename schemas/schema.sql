@@ -1,5 +1,3 @@
-
-
 User
 CREATE TABLE Users
 (
