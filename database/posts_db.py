@@ -1,7 +1,7 @@
 from psycopg_pool import ConnectionPool
 from typing import Any
 from database.db import get_pool
-from psycopg.rows import dict_row
+from psycopg2 import extras
 
 def get_all_posts_db() -> list[tuple]:
     pool = get_pool()
@@ -21,7 +21,7 @@ def get_all_posts_db() -> list[tuple]:
 def get_post_by_id(post_id: int) -> dict[str, Any] | None:
     pool = get_pool()
     with pool.connection() as conn:
-        with conn.cursor(row_factory=dict_row) as cur:
+        with conn.cursor(row_factory=extras.DictCursor) as cur:
             cur.execute('''
                         SELECT
                             post_id,

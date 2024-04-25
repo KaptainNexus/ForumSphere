@@ -1,13 +1,13 @@
 from psycopg_pool import ConnectionPool
 from typing import Any
 from database.db import get_pool
-from psycopg.rows import dict_row
+from psycopg2 import extras
 
 
 def get_user_by_username(username: str) -> dict[str, Any] | None:
     pool = get_pool()
     with pool.connection() as conn:
-        with conn.cursor(row_factory=dict_row) as cur:
+        with conn.cursor(row_factory=extras.DictCursor) as cur:
             cur.execute('''
                         SELECT
                             user_id,
@@ -23,7 +23,7 @@ def get_user_by_username(username: str) -> dict[str, Any] | None:
 def get_user_by_id(user_id: int) -> dict[str, Any] | None:
     pool = get_pool()
     with pool.connection() as conn:
-        with conn.cursor(row_factory=dict_row) as cur:
+        with conn.cursor(row_factory=extras.DictCursor) as cur:
             cur.execute('''
                         SELECT
                             user_id,
