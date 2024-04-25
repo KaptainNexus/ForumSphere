@@ -1,62 +1,91 @@
-from os import abort
-from flask import Flask, render_template, request, redirect
+from flask import Flask, flash, redirect, render_template, request, url_for
 from dotenv import load_dotenv
-import psycopg2
+from repositories import user_repo
+from werkzeug.security import generate_password_hash
+from flask_bcrypt import Bcrypt
+import os
 
 load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY")
+bcrypt=Bcrypt(app)
 
-DB_NAME = "db_name"
-DB_USER = "db_username"
-DB_PASSWORD = "db_password"
-DB_HOST = "localhost"
-DB_PORT = "5432"
-
-@app.route('/')
+@app.get('/')
 def index():
-    return render_template('pages/index.html')
+    return render_template('new_index.html')
 
-@app.route('/search')
+@app.get('/signup')
+def signup():
+    all_users = user_repo.get_all_users()
+    print(all_users)
+    return render_template('new_signup.html', users=all_users)
+
+@app.get('/signin')
+def signin():
+    return render_template('new_signin.html')
+@app.get('/search')
 def search():
-    query = request.args.get('query')
+    return render_template('new_search.html') 
 
-    # Establish a connection to the database
-    conn = psycopg2.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
-    )
-    cursor = conn.cursor()
+@app.get('/create_post')
+def create_post():
+    return render_template('new_createpost.html')
 
-    # Execute a SQL query to search for posts matching the query
-    cursor.execute("SELECT * FROM Posts WHERE title LIKE %s OR content LIKE %s", ('%' + query + '%', '%' + query + '%'))
-    post_results = cursor.fetchall()
+@app.get('/profile')
+def see_profile():
+    return render_template('new_profilepage.html')
 
-    # Execute a SQL query to search for users matching the query
-    cursor.execute("SELECT * FROM Users WHERE username LIKE %s", ('%' + query + '%',))
-    user_results = cursor.fetchall()
-
-    conn.close()
-
-    return render_template('pages/components/_search_.html',post_results=post_results, user_results=user_results)
-
-@app.get('/secret')
-def secret():
-    return render_template('pages/_secret_.html')
+@app.get('/<int:user_id>')
+def see_user(user_id):
+    user = user_repo.get_user_by_id(user_id)
+    return render_template('new_user.html', user=user)
 
 @app.post('/signup')
-def signup():
-    username = request.form.get('username')
-    password = request.form.get('password')
-    if not username or not password:
-        abort (400)
-    existing_user = ...
-    if existing_user is not None:
-        return redirect('/')
-    return 'signup'
+def create_user():
+    first_name = request.form['firstName'].strip()
+    last_name = request.form['lastName'].strip()
+    email = request.form['email'].strip()
+    password = request.form['password'].strip()
 
-if __name__ == '__main__':
-    app.run(debug=True)
+    if not (first_name and last_name and email and password):
+        flash('All fields are required.')
+        return redirect(url_for('signup'))
+
+    # Encrypt password
+    encrypted_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    # Check if user already exists
+    user = user_repo.find_user_by_email(email)
+    if user:
+        flash('Email already in use.')
+        return redirect(url_for('signup'))
+
+    # Create new user
+    user_repo.create_user(first_name, last_name, email, encrypted_password)
+    flash('Account created successfully, please log in.')
+    return redirect(url_for('signin'))
+
+
+    # find user by email, BY SQL FIND "USER" WHERE....
+    # if user exists and password matches, redirect to index compare form password to user.password
+@app.post('/signin')
+def signin_user():
+    email = request.form['email'].strip()
+    password = request.form['password'].strip()
+    # Validation: check if not empty
+    if not email or not password:
+        flash('Email and password are required.')
+        return redirect(url_for('signin'))
+
+    # Find user by email
+    user = user_repo.find_user_by_email(email)
+    if user and check_password_hash(user['password'], password):
+    # If user exists and password matches
+        session['user_id'] = user['id']  # Assuming there's a user ID field
+        flash('You are successfully logged in.')
+        return redirect(url_for('index'))  # Redirect to the homepage or dashboard
+    else:
+    # If no user or password doesn't match
+        flash('Invalid email or password.')
+        return redirect(url_for('signin'))

@@ -1,0 +1,50 @@
+{%extends 'new_layout.html'%}
+{%block main%}
+
+
+<main class="container">
+    <div class="card text-center">
+      <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Post</a>
+          </li>
+        </ul>
+      </div>
+      <div class="card-body">
+        <form>
+          <div class="form-group">
+            <label for="exampleFormControlInput1"></label>
+            <input
+              type="text"
+              class="form-control"
+              id="exampleFormControlInput1"
+              placeholder="Tytle"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="exampleFormControlTextarea1"></label>
+            <textarea
+              class="form-control"
+              id="exampleFormControlTextarea1"
+              rows="3"
+              placeholder="Text"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="exampleFormControlFile1"> </label>
+            <input
+              type="file"
+              class="form-control-file"
+              id="exampleFormControlFile1"
+            />
+          </div>
+
+          <a href="#" class="btn btn-primary">submit</a>
+        </form>
+      </div>
+    </div>
+  </main>
+  {% endblock%}
