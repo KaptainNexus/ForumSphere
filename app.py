@@ -2,7 +2,7 @@ from flask import Flask, flash, redirect, render_template, request, url_for, ses
 from dotenv import load_dotenv
 from repositories import user_repo
 from werkzeug.security import generate_password_hash
-from flask_bcrypt import Bcrypt
+from flask_bcrypt import Bcrypt 
 import os
 
 load_dotenv()
@@ -70,7 +70,36 @@ def create_user():
     # find user by email, BY SQL FIND "USER" WHERE....
     # if user exists and password matches, redirect to index compare form password to user.password
 @app.post('/signin')
-def signin():
+def signin_user():
+    email = request.form['email'].strip()
+    password = request.form['password'].strip()
+    # Validation: check if not empty
+    if not email or not password:
+        flash('Email and password are required.')
+        return redirect(url_for('signin'))
+
+    # Find user by email
+    user = user_repo.find_user_by_email(email)
+    if user and check_password_hash(user['password'], password):
+    # If user exists and password matches
+        session['user_id'] = user['id']  # Assuming there's a user ID field
+        flash('You are successfully logged in.')
+        return redirect(url_for('index'))  # Redirect to the homepage or dashboard
+    else:
+    # If no user or password doesn't match
+        flash('Invalid email or password.')
+        return redirect(url_for('signin'))
+
+
+
+
+
+
+
+
+
+
+'''def signin():
     email = request.form.get('email')
     password = request.form.get('password')
     
@@ -84,4 +113,4 @@ def signin():
         return render_template('pages/loginoage.html', msg = msg)
     session['user'] = {'first_name': user.first_name,}
 
-    return redirect('/') 
+    return redirect('/') '''
