@@ -37,12 +37,12 @@ def create_user(first_name, last_name, email, password):
             conn.commit() 
 
 
-def get_user_by_email():
+'''def get_user_by_email():
         pool = get_pool()
         with pool.connection() as conn:
             with conn.cursor(row_factory=dict_row) as cursor:
                 cursor.execute('SELECT * FROM 'Users' WHERE email=%s, (email))
-                return cursor.fetchone()
+                return cursor.fetchone()'''
 
 
 
