@@ -1,8 +1,8 @@
 from flask import Flask, flash, redirect, render_template, request, url_for, session
 from dotenv import load_dotenv
 from repositories import user_repo
-from werkzeug.security import generate_password_hash
-from flask_bcrypt import Bcrypt 
+from werkzeug.security import  generate_password_hash, check_password_hash
+from flask_bcrypt import Bcrypt
 import os
 
 load_dotenv()
@@ -34,7 +34,9 @@ def create_post():
 
 @app.get('/profile')
 def see_profile():
-    return render_template('new_profilepage.html')
+    user_id = request.form['user_id'].strip()
+    user = user_repo.get_user_by_id(user_id)
+    return render_template('new_profilepage.html', user = user)
 
 @app.get('/<int:user_id>')
 def see_user(user_id):

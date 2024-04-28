@@ -14,9 +14,9 @@
                     <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp"
                       class="rounded-circle img-fluid" style="width: 100px;" />
                   </div>
-                  <h4 class="mb-2">Julie L. Arsenault</h4>
-                  <p class="text-muted mb-4">@Programmer <span class="mx-2">|</span> <a
-                      href="#!">mdbootstrap.com</a></p>
+                  <h4 class="mb-2">{{ User.username }}</h4>
+                  <p class="text-muted mb-4">{{ User.title }}<span class="mx-2">|</span>
+                      <li>{{ User.email }}</li></p>
                   <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-rounded btn-lg">
                     Message now
                   </button>
