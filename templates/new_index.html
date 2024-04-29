@@ -1,6 +1,11 @@
 {%extends 'new_layout.html'%}
 {%block main%}
 
+{% if is_logged_in %}
+    <p>Welcome, you are signed in!</p>
+{% else %}
+    <p>You are not signed in.</p>
+{% endif %}
 
 
 <main style="width: 100%;">
