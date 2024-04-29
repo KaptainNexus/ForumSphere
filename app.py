@@ -1,32 +1,128 @@
-from flask import Flask, flash, redirect, render_template, request, url_for, session
+from flask import Flask, flash, redirect, render_template, request, url_for, session, jsonify
 from dotenv import load_dotenv
-from repositories import user_repo
-from werkzeug.security import generate_password_hash
+from database import user_db
+from database import posts_db
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_bcrypt import Bcrypt 
+import psycopg2
 import os
 
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
+app.secret_key = "12345"
 bcrypt=Bcrypt(app)
+
+# Function to set the logged-in user in the session
+def set_logged_in_user(user_id):
+    session['user_id'] = user_id
+    session['logged_in'] = True
+
+# Function to check if the user is logged in
+def is_logged_in():
+    return session.get('logged_in', False)
+
+@app.route('/logout')
+def logout():
+    session.clear()  # Clear the session data
+    return redirect(url_for('index'))
 
 @app.get('/')
 def index():
-    return render_template('new_index.html')
+    return render_template('new_index.html', is_logged_in=is_logged_in())
 
-@app.get('/signup')
+@app.route('/signup', methods=['GET'])
+def render_signup():
+    return render_template('new_signup.html')
+
+@app.route('/signup', methods=['POST'])
 def signup():
-    all_users = user_repo.get_all_users()
-    print(all_users)
-    return render_template('new_signup.html', users=all_users)
+    email = request.form['email'].strip()
+    username = request.form['username'].strip()
+    password = request.form['password'].strip()
+    confirm_password = request.form['confirm_password'].strip()
+
+    if not username or not password or not confirm_password:
+        flash('All fields are required.')
+        return redirect(url_for('render_signup'))
+
+    if password != confirm_password:
+        flash('Passwords do not match.')
+        return redirect(url_for('render_signup'))
+
+    existing_user = user_db.get_user_by_username(username)
+    if existing_user:
+        flash('Username already exists. Please choose a different one.')
+        return redirect(url_for('render_signup'))
+    
+    existing_email = user_db.get_user_by_email(email)
+    if existing_email:
+        flash('email is already in use. Please choose a different one.')
+        return redirect(url_for('render_signup'))
+
+    hashed_password = generate_password_hash(password)
+
+    try:
+        user_id = user_db.create_user(username, email, hashed_password)
+        if user_id:
+            flash('User successfully created. Please sign in.')
+            return redirect(url_for('signin'))
+        else:
+            flash('Failed to create user.')
+            return redirect(url_for('render_signup'))
+    except Exception as e:
+        flash('An error occurred. Please try again later.')
+        app.logger.error(f"Error during signup: {e}")
+        return redirect(url_for('render_signup'))
 
 @app.get('/signin')
 def signin():
     return render_template('new_signin.html')
+
+@app.post('/signin')
+def signin_user():
+    email = request.form['email'].strip()
+    password = request.form['password'].strip()
+
+    if not email or not password:
+        flash('Email and password are required.')
+        return redirect(url_for('signin'))
+
+    user = user_db.get_user_by_email(email)
+    if user and check_password_hash(user['password'], password):
+        set_logged_in_user(user['user_id'])  # Set user_id and logged_in flag in session
+        flash('You are successfully logged in.')
+        return redirect(url_for('index'))
+    else:
+        flash('Invalid email or password.')
+        return redirect(url_for('signin'))
+
 @app.get('/search')
 def search():
-    return render_template('new_search.html') 
+    query = request.args.get('q', '').strip()
+    if query:
+        user_results = user_db.search_users(query)
+        post_results = posts_db.search_posts_title(query)
+        results = {
+            'users': user_results,
+            'posts': post_results
+        }
+    else:
+        results = None
+    return render_template('new_search.html', results=results)
+    
+def generate_suggestions(query):
+    # Query the database for users and post names that match the query
+    users = user_db.search_users(query)
+    posts = posts_db.search_posts_title(query)
+    
+    # Combine user and post suggestions
+    suggestions = users + posts
+    
+    if not suggestions:
+        suggestions.append("No results found")
+    
+    return suggestions
 
 @app.get('/create_post')
 def create_post():
@@ -34,83 +130,24 @@ def create_post():
 
 @app.get('/profile')
 def see_profile():
-    return render_template('new_profilepage.html')
-
-@app.get('/<int:user_id>')
-def see_user(user_id):
-    user = user_repo.get_user_by_id(user_id)
-    return render_template('new_user.html', user=user)
-
-@app.post('/signup')
-def create_user():
-    first_name = request.form['firstName'].strip()
-    last_name = request.form['lastName'].strip()
-    email = request.form['email'].strip()
-    password = request.form['password'].strip()
-
-    if not (first_name and last_name and email and password):
-        flash('All fields are required.')
-        return redirect(url_for('signup'))
-
-    # Encrypt password
-    encrypted_password = bcrypt.generate_password_hash(password).decode('utf-8')
-
-    # Check if user already exists
-    user = user_repo.find_user_by_email(email)
-    if user:
-        flash('Email already in use.')
-        return redirect(url_for('signup'))
-
-    # Create new user
-    user_repo.create_user(first_name, last_name, email, encrypted_password)
-    flash('Account created successfully, please log in.')
-    return redirect(url_for('signin'))
-
-
-    # find user by email, BY SQL FIND "USER" WHERE....
-    # if user exists and password matches, redirect to index compare form password to user.password
-@app.post('/signin')
-def signin_user():
-    email = request.form['email'].strip()
-    password = request.form['password'].strip()
-    # Validation: check if not empty
-    if not email or not password:
-        flash('Email and password are required.')
+    if not is_logged_in():  # Check if the user is not logged in
+        flash('Please sign in to view your profile.')
         return redirect(url_for('signin'))
 
-    # Find user by email
-    user = user_repo.find_user_by_email(email)
-    if user and check_password_hash(user['password'], password):
-    # If user exists and password matches
-        session['user_id'] = user['id']  # Assuming there's a user ID field
-        flash('You are successfully logged in.')
-        return redirect(url_for('index'))  # Redirect to the homepage or dashboard
-    else:
-    # If no user or password doesn't match
-        flash('Invalid email or password.')
-        return redirect(url_for('signin'))
-
-
-
-
-
-
-
-
-
-
-'''def signin():
-    email = request.form.get('email')
-    password = request.form.get('password')
+    user_id = session.get('user_id', None)  # Retrieve user_id from session
+    if user_id is None:
+        flash('User ID is required.')
+        return redirect(url_for('index'))
     
-    user = get_user_by_email(email)
-    if not user:
-        msg = 'Incorrect Email or Email does not exist. Try again.'
-    isValid = bcrypt.check_password_hash(user.password, password)
-    if not isValid:
-        msg = 'Incorrect Password. Try again.'
-    if msg:
-        return render_template('pages/loginoage.html', msg = msg)
-    session['user'] = {'first_name': user.first_name,}
+    # Convert user_id to string if it's an integer
+    user_id = str(user_id)
 
-    return redirect('/') '''
+    user = user_db.get_user_by_id(user_id)
+    
+    if not user:
+        flash('User not found.')
+        return redirect(url_for('index'))
+    
+    return render_template('new_profilepage.html', user=user)
+
+
