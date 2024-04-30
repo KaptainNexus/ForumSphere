@@ -78,3 +78,4 @@ def search_users(query: str) -> list[dict[str, Any]]:
             return users
     finally:
         conn.close()
+#test
