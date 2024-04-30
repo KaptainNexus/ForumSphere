@@ -35,3 +35,10 @@ def create_user(first_name, last_name, email, password):
                 (username, email, password)
             )
             conn.commit() 
+            
+def update_password_change_flag(email):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('UPDATE "User" SET want_to_change_password = TRUE WHERE email = %s;', [email])
+            conn.commit()

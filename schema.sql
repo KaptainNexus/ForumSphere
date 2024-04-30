@@ -76,3 +76,7 @@ ALTER TABLE Reaction ADD CONSTRAINT FK_Reaction_Image FOREIGN KEY (image_id) REF
 -- Add foreign key constraints to Friendship table
 ALTER TABLE Friendship ADD CONSTRAINT FK_Friendship_User_One FOREIGN KEY (user_id_one) REFERENCES "User"(user_id);
 ALTER TABLE Friendship ADD CONSTRAINT FK_Friendship_User_Two FOREIGN KEY (user_id_two) REFERENCES "User"(user_id);
+
+-- Add a column to the User table for password reset
+ALTER TABLE "User" ADD COLUMN want_to_change_password BOOLEAN NOT NULL DEFAULT FALSE;
+
