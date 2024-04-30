@@ -1,7 +1,7 @@
-from flask import Flask, flash, redirect, render_template, request, url_for, request, url_for
+from flask import Flask, flash, redirect, render_template, request, url_for, request, url_for, session
 from dotenv import load_dotenv
 from repositories import user_repo
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_bcrypt import Bcrypt
 import os
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
@@ -23,6 +23,7 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
 
+hashed_password = generate_password_hash('your_plain_text_password', method='pbkdf2:sha256')
 def generate_reset_token(email):
     serializer = URLSafeTimedSerializer(app.secret_key)
     return serializer.dumps(email, salt='email-confirm')
@@ -69,7 +70,6 @@ def create_user():
         flash('All fields are required.')
         return redirect(url_for('signup'))
 
-    # Encrypt password
     encrypted_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     # Check if user already exists
@@ -83,30 +83,39 @@ def create_user():
     flash('Account created successfully, please log in.')
     return redirect(url_for('signin'))
 
-
-    # find user by email, BY SQL FIND "USER" WHERE....
-    # if user exists and password matches, redirect to index compare form password to user.password
+@app.get('/signin')
+def show_signin_form():
+    return render_template('signin.html')
 
 @app.post('/signin')
 def signin_user():
     email = request.form['email'].strip()
     password = request.form['password'].strip()
-    # Validation: check if not empty
-    if not email or not password:
-        flash('Email and password are required.')
-        return redirect(url_for('signin'))
 
+    print("Attempting to sign in with:", email, password)
     # Find user by email
     user = user_repo.find_user_by_email(email)
-    if user and check_password_hash(user['password'], password):
-    # If user exists and password matches
-        session['user_id'] = user['id']  # Assuming there's a user ID field
+    print("User found:", user)
+    print("Stored hash:", user.get('password', 'No password found'))
+    
+
+    if user and bcrypt.check_password_hash(user['password'], password):
+        session['user_id'] = user['user_id']
+        session['username'] = user['username'] 
+
         flash('You are successfully logged in.')
-        return redirect(url_for('index'))  # Redirect to the homepage or dashboard
+        return redirect(url_for('index'))  
     else:
-    # If no user or password doesn't match
         flash('Invalid email or password.')
         return redirect(url_for('signin'))
+
+@app.post('/logout')
+def logout():
+    # Remove user info from the session
+    session.pop('user_id', None)
+    session.pop('username', None)
+    flash('You have successfully logged out.')
+    return redirect(url_for('signin'))
 
 
 @app.get('/forgot_password')
