@@ -26,62 +26,123 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Features <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/profile">Profile Page</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="">Post Page</a>
-                </li>
-                {% if is_logged_in %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/logout">
-                            <button type="button" class="btn btn-dark">LOG OUT</button>
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/signup">
-                            <button type="button" class="btn btn-dark">SIGN UP</button>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/signin">
-                            <button type="button" class="btn btn-dark">SIGN IN</button>
-                        </a>
-                    </li>
-                {% endif %}
-            </ul>
-            <form class="form-inline my-2 my-lg-0" action="/search" method="GET">
-                <input
-                        class="form-control mr-sm-2"
-                        type="search"
-                        placeholder="Search Forum"
-                        aria-label="Search"
-                        name="q"
-                />
-                <button
-                        class="btn btn-outline-success my-2 my-sm-0"
-                        type="submit"
-                >
-                    Search
-                </button>
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/create_post">Create Post
+                 <span class="sr-only">(current)</span></a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/profile">Profile Page</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="">Post Page</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/search">Search Page</a>
+            </li>
+            
+
+            {% if 'username' in session %}
+            <li class="nav-item">
+              <form action="{{ url_for('logout') }}" method="post">
+
+              </form>
+                <form action="{{ url_for('logout') }}" method="post">
+                <button type="submit" class="btn btn-dark mr-2">Sign Out</button>
             </form>
+            </li>
+
+                <li class="nav-item">
+                  <a href="/profile">
+                    <button 
+                      type="button" 
+                      class="btn btn-dark mr-2">{{ session['username'] }}
+                    </button>
+                  </a>
+    
+                  </li>
+                <!-- Logout button/link here -->
+
+            {% else %}
+                <!-- Login/Signup buttons/links here -->
+                <li class="nav-item">
+                  <a href="/signup">
+                    <button
+                      type="button"
+                      class="btn btn-primary mr-2">
+                      SIGN UP
+                    </button>
+                </li>
+                <li class="nav-item">
+                  <a href="/signin">
+                    <button 
+                      type="button" 
+                      class="btn btn-dark">SIGN IN</button>
+                  </a>
+                </li>
+    
+
+            {% endif %}
+
+
+          </ul>
+
+
+          <form class="form-inline my-2 my-lg-0">
+            <input
+              class="form-control mr-sm-2"
+              type="search"
+              placeholder="Search Forum"
+              aria-label="Search"
+            />
+            <button
+              class="btn btn-outline-success my-2 my-sm-0"
+              type="submit"
+              href="search"
+            >
+              Search
+            </button>
+          </form>
         </div>
     </nav>
 </header>
 
-<div class="container">
-    <!-- Flash messages -->
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <div class="alert alert-primary" role="alert">
-                {% for message in messages %}
-                    {{ message }}
-                {% endfor %}
+
+    <main role="main" class="container">
+      {% block main %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="mt-2">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+                  {{ message }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+  
+        <!-- Here goes the individual page content -->
+      {% endblock %}
+    </main>    <footer class="footer align-items-end">
+      <div class="bg-light py-3 py-md-5 py-xl-8 border-top border-light-subtle">
+        <div class="container overflow-hidden">
+          <div class="row gy-3 gy-md-5 gy-xl-0 align-items-sm-center">
+            <div class="col-xs-12 col-sm-6 col-xl-3 order-0 order-xl-0">
+              <div class="footer-logo-wrapper text-center text-sm-start">
+                <a href="#!">
+                  <img
+                    src="./assets/img/bsb-logo.svg"
+                    alt="Forum sphere"
+                    width="175"
+                    height="57"
+                  />
+                </a>
+              </div>
             </div>
         {% endif %}
     {% endwith %}

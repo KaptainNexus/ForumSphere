@@ -6,7 +6,7 @@ html {
 
 body {
   margin: 0;
-  background-color: rgb(199, 199, 199);
+  background-color: grey;
   display: grid;
   grid-template-columns: 1;
   grid-template-rows: 8% auto 10%;
@@ -19,24 +19,24 @@ body {
 header {
     
   grid-area: header;
-  background-color: hotpink;
+  background-color: grey;
 }
 main {
     height: 100;
   grid-area: main;
-  background-color: maroon;
+  background-color: grey;
 }
 footer {
   grid-area: footer;
-  background-color: red;
+  background-color: grey;
 }
 
 main {
   grid-area: main;
-  background-color: mediumseagreen;
+  background-color: grey;
 }
 footer {
   grid-area: footer;
-  background-color: red;
+  background-color: grey;
 }
 
