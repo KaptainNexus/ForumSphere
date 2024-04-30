@@ -1,5 +1,5 @@
 
-CREATE DATABASE final_project;
+CREATE DATABASE forumsphere;
 
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
