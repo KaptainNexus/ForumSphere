@@ -1,5 +1,4 @@
 
-CREATE DATABASE sandbox_project;
 
 -- Create the ENUM type for difficulty_level
 CREATE TYPE difficulty_level AS ENUM ('easy', 'medium', 'hard');
@@ -9,6 +8,7 @@ CREATE TABLE IF NOT EXISTS "User" (
     username VARCHAR(255),
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
+    want_to_change_password BOOLEAN NOT NULL DEFAULT FALSE;
     registration_day TIMESTAMP NOT NULL DEFAULT NOW(),
     last_login_day TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -78,5 +78,5 @@ ALTER TABLE Friendship ADD CONSTRAINT FK_Friendship_User_One FOREIGN KEY (user_i
 ALTER TABLE Friendship ADD CONSTRAINT FK_Friendship_User_Two FOREIGN KEY (user_id_two) REFERENCES "User"(user_id);
 
 -- Add a column to the User table for password reset
-ALTER TABLE "User" ADD COLUMN want_to_change_password BOOLEAN NOT NULL DEFAULT FALSE;
+--ALTER TABLE "User" ADD COLUMN want_to_change_password BOOLEAN NOT NULL DEFAULT FALSE;
 

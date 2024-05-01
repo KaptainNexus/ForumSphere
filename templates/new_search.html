@@ -1,4 +1,16 @@
-{%extends 'new_layout.html'%} {%block main%}
+{%extends 'new_layout.html'%} 
+{%block main%}
+
+  {% with messages = get_flashed_messages() %}
+      {% if messages %}
+          <div class="container mt-3">
+              {% for message in messages %}
+                  <div class="alert alert-success" role="alert">{{ message }}</div>
+              {% endfor %}
+          </div>
+      {% endif %}
+  {% endwith %}
+
 
 <main style="width: 100%">
   <div class="container-fluid">

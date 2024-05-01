@@ -1,3 +1,4 @@
+from datetime import datetime
 from psycopg_pool import ConnectionPool
 from typing import Any
 from database.db import get_pool
@@ -66,3 +67,16 @@ def delete_user(user_id: int) -> None:
                         DELETE FROM Users
                         WHERE user_id = %s
                         ''', [user_id])
+            
+def create_post(user_id, title, content):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            now = datetime.now()
+            cur.execute('''
+                INSERT INTO Posts (user_id, title, content, post_date, last_modified_date)
+                VALUES (%s, %s, %s, %s, %s)
+                RETURNING post_id
+            ''', (user_id, title, content, now, now))
+            post_id = cur.fetchone()[0]
+            return post_id

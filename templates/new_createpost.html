@@ -1,53 +1,33 @@
-{%extends 'new_layout.html'%}
-{%block main%}
-<main style="width: 100%" >
+{% extends 'new_layout.html' %}
+
+{% block main %}
+
+
+<main style="width: 100%">
   <section class="vh-100" style="background-color: grey;">
     <div class="container py-5 h-100">
+      <div class="card text-center" style="border-radius: 15px;">
+        <div class="card-header">
+          <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+              <a class="nav-link active" href="#">Post</a>
+            </li>
+          </ul>
+        </div>
+        <div class="card-body">
+          <form method="POST" action="/create_post" enctype="multipart/form-data">
+            <div class="form-group">
+              <input type="text" class="form-control" id="title" name="title" placeholder="Title" required>
+            </div>
+            <div class="form-group">
+              <textarea class="form-control" id="content" name="content" rows="3" placeholder="Text" required></textarea>
+            </div>
 
-
-
-    <div class="card text-center" style="border-radius: 15px;">
-      <div class="card-header">
-        <ul class="nav nav-tabs card-header-tabs">
-          <li class="nav-item">
-            <a class="nav-link active" href="#">Post</a>
-          </li>
-        </ul>
-      </div>
-      <div class="card-body">
-        <form>
-          <div class="form-group">
-            <label for="exampleFormControlInput1"></label>
-            <input
-              type="text"
-              class="form-control"
-              id="exampleFormControlInput1"
-              placeholder="Tytle"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="exampleFormControlTextarea1"></label>
-            <textarea
-              class="form-control"
-              id="exampleFormControlTextarea1"
-              rows="3"
-              placeholder="Text"
-            ></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="exampleFormControlFile1"> </label>
-            <input
-              type="file"
-              class="form-control-file"
-              id="exampleFormControlFile1"
-            />
-          </div>
-
-          <a href="#" class="btn btn-primary">submit</a>
-        </form>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
       </div>
     </div>
-  </main>
-  {% endblock%}
+  </section>
+</main>
+{% endblock %}

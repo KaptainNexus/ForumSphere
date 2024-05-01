@@ -1,5 +1,17 @@
 {%extends 'new_layout.html'%}
 {%block main%}
+
+  {% with messages = get_flashed_messages() %}
+      {% if messages %}
+          <div class="container mt-3">
+              {% for message in messages %}
+                  <div class="alert alert-success" role="alert">{{ message }}</div>
+              {% endfor %}
+          </div>
+      {% endif %}
+  {% endwith %}
+
+
 <main style="width: 100%">
     <section class="vh-100" style="background-color: grey;">
         <div class="container py-5 h-100">
@@ -17,20 +29,30 @@
     <h4 class="mb-2">Guest</h4>  <!-- Default text if not logged in -->
 {% endif %}
 
-                  <p class="text-muted mb-4">@Programmer <span class="mx-2">|</span> <a
-                      href="#!">mdbootstrap.com</a></p>
-                      <a href="/">
-
-                  <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-rounded btn-lg mb-3">
-                    Message now
-                  </button>
-                  <a href="/create_post">
-                  <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-rounded btn-lg ">
-                    
-                      Create a post
-                    
-                  </button>
-                </a>
+<div class="container">
+  <div class="row">
+      <div class="col-12">
+          <a href="/message" class="btn btn-primary btn-rounded btn-lg mb-3 btn-block" role="button">
+              Message now
+          </a>
+      </div>
+      <div class="col-12">
+          <a href="/create_post" class="btn btn-primary btn-rounded btn-lg mb-3 btn-block" role="button">
+              Create a post
+          </a>
+      </div>
+      <div class="col-12">
+          <a href="/view_message" class="btn btn-primary btn-rounded btn-lg mb-3 btn-block" role="button">
+              View message
+          </a>
+      </div>
+      <div class="col-12">
+          <a href="/delete_user" class="btn btn-primary btn-rounded btn-lg mb-3 btn-block" role="button">
+              Delete user
+          </a>
+      </div>
+  </div>
+</div>
 
                 </div>
               </div>

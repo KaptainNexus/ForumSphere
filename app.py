@@ -6,6 +6,9 @@ from flask_bcrypt import Bcrypt
 import os
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from flask_mailman import Mail, EmailMessage
+import logging
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 
@@ -29,10 +32,19 @@ def generate_reset_token(email):
     return serializer.dumps(email, salt='email-confirm')
 
 
-
 @app.get('/')
-def index():
-    return render_template('new_index.html')
+def fetch_all_posts():
+    try:
+        logging.debug("Attempting to fetch all posts from the database.")
+        posts = user_repo.find_all_posts()
+        if not posts:
+            logging.debug('No posts found')
+        else:
+            logging.debug(f'Number of posts retrieved: {len(posts)}')
+        return render_template('new_index.html', posts=posts)
+    except Exception as e:
+        logging.error(f'Failed to fetch posts: {e}', exc_info=True)
+        return "Error fetching posts", 500
 
 @app.get('/signup')
 def signup():
@@ -47,12 +59,17 @@ def search():
     return render_template('new_search.html') 
 
 @app.get('/create_post')
-def create_post():
+def show_create_post_form():
     return render_template('new_createpost.html')
 
 @app.get('/profile')
 def see_profile():
     return render_template('new_profilepage.html')
+
+@app.get('/message')
+def send_message():
+    return render_template('new_message.html')
+
 
 @app.get('/<int:user_id>')
 def see_user(user_id):
@@ -96,19 +113,25 @@ def signin_user():
     # Find user by email
     user = user_repo.find_user_by_email(email)
     print("User found:", user)
-    print("Stored hash:", user.get('password', 'No password found'))
     
+    # Check if user is None before trying to access its properties
+    if user is None:
+        print("No user found with that email.")
+        flash('Invalid email or password.')
+        return redirect(url_for('signin'))
 
-    if user and bcrypt.check_password_hash(user['password'], password):
+    # Since user is not None, it's safe to access its properties
+    print("Stored hash:", user.get('password', 'No password found'))
+
+    if bcrypt.check_password_hash(user['password'], password):
         session['user_id'] = user['user_id']
         session['username'] = user['username'] 
 
         flash('You are successfully logged in.')
-        return redirect(url_for('index'))  
+        return redirect(url_for('fetch_all_posts'))  
     else:
         flash('Invalid email or password.')
         return redirect(url_for('signin'))
-
 @app.post('/logout')
 def logout():
     # Remove user info from the session
@@ -149,7 +172,7 @@ def submit_forgot_password_form():
         except Exception as e:
             flash('An error occurred while sending the email. Please try again later.', 'error')
             app.logger.error(f"Failed to send email: {e}")
-        return redirect(url_for('index'))
+        return redirect(url_for('fetch_all_posts'))
 
 @app.get('/reset_password/<token>')
 def show_reset_password_form(token):
@@ -196,6 +219,39 @@ def reset_password(token):
         flash('An error occurred while updating your password. Please try again.', 'error')
         return redirect(url_for('reset_password', token=token))
 
+@app.post('/create_post')
+def submit_create_post():
+    title = request.form['title'].strip()
+    content = request.form['content'].strip()
+
+    if not (title and content):
+        flash('Both title and content are required.')
+        return redirect(url_for('create_post_form'))  # Assuming you have a form at this route
+
+    # Assuming user_id is retrieved from session after user logs in
+    user_id = session.get('user_id')
+    if not user_id:
+        flash('You must be logged in to create a post.')
+        return redirect(url_for('signin'))
+
+    # Create new post in the database
+    post_id = user_repo.create_post(user_id, title, content)
+    if post_id:
+        flash('Post created successfully!')
+        return redirect(url_for('fetch_all_posts'))  # Redirect to the homepage or another appropriate page
+    else:
+        flash('An error occurred while creating the post.')
+        return redirect(url_for('create_post_form'))
+
+@app.post('/delete_post')
+def delete_post():
+    post_id = request.form['post_id']
+    if post_id:
+        user_repo.delete_post_from_db(post_id)
+        flash('Post deleted successfully!')
+    else:
+        flash('Failed to delete the post.')
+    return redirect(url_for('fetch_all_posts'))
 
 
 if __name__ == "__main__":

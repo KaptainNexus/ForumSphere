@@ -1,7 +1,10 @@
+from datetime import datetime
 from repositories.db import get_pool
 from psycopg.rows import dict_row
+import logging
 
 
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def get_all_users():
     pool = get_pool()
@@ -41,4 +44,42 @@ def update_password_change_flag(email):
     with pool.connection() as conn:
         with conn.cursor() as cur:
             cur.execute('UPDATE "User" SET want_to_change_password = TRUE WHERE email = %s;', [email])
+            conn.commit()
+
+def update_user_password(user_id: int, hashed_password: str) -> None:
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('''
+                        UPDATE users
+                        SET password = %s
+                        WHERE user_id = %s
+                        ''', [hashed_password, user_id])
+            
+def find_all_posts(limit=15, offset=0):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('SELECT * FROM Post ORDER BY post_id LIMIT %s OFFSET %s;', (limit, offset))
+            results = cur.fetchall()
+            return results
+        
+def create_post(user_id, title, content, difficulty_level='easy'):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            now = datetime.now()
+            cur.execute('''
+                INSERT INTO Post (user_id, title, content, post_data, last_modified_data, difficulty_level)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                RETURNING post_id
+            ''', (user_id, title, content, now, now, difficulty_level))
+            post_id = cur.fetchone()[0]
+            return post_id
+
+def delete_post_from_db(post_id):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('DELETE FROM Post WHERE post_id = %s;', [post_id])
             conn.commit()
