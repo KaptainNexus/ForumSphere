@@ -20,6 +20,21 @@ def get_user_by_username(username: str) -> dict[str, Any] | None:
             user = cur.fetchone()
             return user
         
+def get_all_users() -> list[dict[str, Any]]:
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=extras.DictCursor) as cur:
+            cur.execute('''
+                        SELECT
+                            user_id,
+                            username,
+                            password AS hashed_password
+                        FROM
+                            Users
+                        ''')
+            users = cur.fetchall()
+            return users
+        
 def get_user_by_id(user_id: int) -> dict[str, Any] | None:
     pool = get_pool()
     with pool.connection() as conn:

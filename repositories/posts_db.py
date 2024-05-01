@@ -11,9 +11,11 @@ def get_all_posts_db() -> list[tuple]:
                 SELECT 
                     post_id,
                     title,
-                    body,
+                    content,
                     user_id,
-                    timestamp
+                    last_modified_data,
+                    difficulty_level,
+                    image_id
                 FROM Posts
             ''')
             return cur.fetchall()
@@ -26,9 +28,11 @@ def get_post_by_id(post_id: int) -> dict[str, Any] | None:
                         SELECT
                             post_id,
                             title,
-                            body,
+                            content,
                             user_id,
-                            timestamp
+                            last_modified_data,
+                            difficulty_level,
+                            image_id
                         FROM
                             Posts
                         WHERE post_id = %s
@@ -48,15 +52,6 @@ def create_post(title: str, body: str, user_id: int) -> int:
             post_id = cur.fetchone()[0]
             return post_id
         
-# def update_post(post_id: int, title: str, body: str) -> None:
-#     pool = get_pool()
-#     with pool.connection() as conn:
-#         with conn.cursor() as cur:
-#             cur.execute('''
-#                         UPDATE Posts
-#                         SET title = %s, body = %s
-#                         WHERE post_id = %s
-#                         ''', [title, body, post_id])
             
 def delete_post(post_id: int) -> None:
     pool = get_pool()

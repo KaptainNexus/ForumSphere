@@ -1,21 +1,41 @@
 from repositories.db import get_pool
-from psycopg.rows import dict_row
+from psycopg.rows import dict_row # type: ignore
+from typing import Any
+from psycopg2 import extras # type: ignore
 
-
-
-def get_all_users():
+def get_all_users() -> list[dict[str, Any]]:
     pool = get_pool()
     with pool.connection() as conn:
-        with conn.cursor(row_factory=dict_row) as cur:
-            cur.execute('SELECT * FROM "User";')
-            return cur.fetchall()
+        with conn.cursor(row_factory=extras.DictCursor) as cur:
+            cur.execute('''
+                        SELECT
+                            user_id,
+                            username,
+                            password AS hashed_password
+                            email,
+                            registration_date,
+                            last_login_date
+                        FROM
+                            "Users"
+                        ''')
+            users = cur.fetchall()
+            return users
         
-def get_user_by_id(user_id: int):
+def get_user_by_id(user_id: int) -> dict[str, Any] | None:
     pool = get_pool()
     with pool.connection() as conn:
-        with conn.cursor(row_factory=dict_row) as cur:
-            cur.execute('SELECT * FROM "User" WHERE id = %s;', [user_id,])
-            return cur.fetchone()
+        with conn.cursor(row_factory=extras.DictCursor) as cur:
+            cur.execute('''
+                        SELECT
+                            user_id,
+                            username,
+                            password AS hashed_password
+                        FROM
+                            "Users"
+                        WHERE user_id = %s
+                        ''', [user_id])
+            user = cur.fetchone()
+            return user
         
 def find_user_by_email(email):
     pool = get_pool()
@@ -23,7 +43,6 @@ def find_user_by_email(email):
         with conn.cursor(row_factory=dict_row) as cur:
             cur.execute('SELECT user_id, email,  password, username FROM "User" WHERE email = %s;', [email])
             return cur.fetchone()
-
 
 def create_user(first_name, last_name, email, password):
     pool = get_pool()
@@ -36,50 +55,21 @@ def create_user(first_name, last_name, email, password):
             )
             conn.commit() 
 
-
-'''def get_user_by_email():
-        pool = get_pool()
-        with pool.connection() as conn:
-            with conn.cursor(row_factory=dict_row) as cursor:
-                cursor.execute('SELECT * FROM 'Users' WHERE email=%s, (email))
-                return cursor.fetchone()'''
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'''def signin_user():
-    email = request.form['email'].strip()
-    password = request.form['password'].strip()
-    # Validation: check if not empty
-    if not email or not password:
-        flash('Email and password are required.')
-        return redirect(url_for('signin'))
-
-    # Find user by email
-    user = user_repo.find_user_by_email(email)
-    if user and check_password_hash(user['password'], password):
-    # If user exists and password matches
-        session['user_id'] = user['id']  # Assuming there's a user ID field
-        flash('You are successfully logged in.')
-        return redirect(url_for('index'))  # Redirect to the homepage or dashboard
-    else:
-    # If no user or password doesn't match
-        flash('Invalid email or password.')
-        return redirect(url_for('signin'))'''
+def update_user_password(user_id: int, hashed_password: str) -> None:
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('''
+                        UPDATE Users
+                        SET password = %s
+                        WHERE user_id = %s
+                        ''', [hashed_password, user_id])
+            
+def delete_user(user_id: int) -> None:
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('''
+                        DELETE FROM "Users"
+                        WHERE user_id = %s
+                        ''', [user_id])

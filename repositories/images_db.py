@@ -13,7 +13,9 @@ def get_all_images_db() -> list[tuple]:
                 SELECT 
                     image_id,
                     image_link,
-                    timestamp
+                    timestamp,
+                    user_id,
+                    caption
                 FROM Images
             ''')
             return cur.fetchall()
