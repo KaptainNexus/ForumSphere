@@ -1,5 +1,5 @@
 -- Insert data into the User table
-INSERT INTO User (username, email, password, registration_day, last_login_day)
+INSERT INTO "users" (username, email, password, registration_day, last_login_day)
 VALUES
 ('john_doe', 'john.doe@example.com', 'hashed_password', NOW(), NOW()),
 ('jane_smith', 'jane.smith@example.com', 'hashed_password', NOW(), NOW());
@@ -10,7 +10,7 @@ VALUES
 (NOW(), 'A beautiful sunset', 1, 'http://example.com/sunset.jpg', FALSE),
 (NOW(), 'Delicious homemade pizza', 2, 'http://example.com/pizza.jpg', TRUE);
 -- Insert data into the User table
-INSERT INTO "User" (username, email, password, registration_day, last_login_day)
+INSERT INTO "users" (username, email, password, registration_day, last_login_day)
 VALUES
 ('john_doe', 'john.doe@example.com', 'hashed_password', NOW(), NOW()),
 ('jane_smith', 'jane.smith@example.com', 'hashed_password', NOW(), NOW());

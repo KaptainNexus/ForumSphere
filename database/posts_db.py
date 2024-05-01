@@ -10,7 +10,7 @@ def create_post(title: str, body: str, user_id: int) -> int:
     try:
         with conn.cursor() as cur:
             cur.execute('''
-                        INSERT INTO Posts (title, body, user_id, timestamp)
+                        INSERT INTO Posts (title, content, user_id, timestamp)
                         VALUES (%s, %s, %s, %s)
                         RETURNING post_id
                         ''', (title, body, user_id, timestamp))
@@ -20,20 +20,21 @@ def create_post(title: str, body: str, user_id: int) -> int:
     finally:
         conn.close()
 
-def get_all_posts() -> list[tuple]:
+def get_all_posts() -> list[dict]:
     conn = get_connection()
     try:
-        with conn.cursor() as cur:
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
             cur.execute('''
                 SELECT 
                     post_id,
                     title,
-                    body,
+                    content,
                     user_id,
                     timestamp
                 FROM Posts
             ''')
-            return cur.fetchall()
+            posts = cur.fetchall()
+            return [dict(post) for post in posts]
     finally:
         conn.close()
 
@@ -46,7 +47,7 @@ def get_post_by_id(post_id: int) -> dict[str, Any] | None:
                         SELECT
                             post_id,
                             title,
-                            body,
+                            content,
                             user_id,
                             timestamp
                         FROM
@@ -64,7 +65,7 @@ def update_post(post_id: int, title: str, body: str) -> None:
         with conn.cursor() as cur:
             cur.execute('''
                         UPDATE Posts
-                        SET title = %s, body = %s
+                        SET title = %s, content = %s
                         WHERE post_id = %s
                         ''', [title, body, post_id])
             conn.commit()
@@ -100,6 +101,9 @@ def search_posts_title(title: str) -> list[dict[str, Any]]:
                         WHERE title ILIKE %s
                         ''', ['%' + title + '%'])
             posts = cur.fetchall()
-            return posts
+            return [dict(post) for post in posts]
+    except Exception as e:
+        print(f"Error in search_posts_title: {e}")
+        return []
     finally:
         conn.close()

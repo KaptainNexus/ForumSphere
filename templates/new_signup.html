@@ -1,6 +1,15 @@
 {%extends 'new_layout.html'%} 
 {%block main%}
 <main style="width: 100%">
+  {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-success" role="alert">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
   <section class="vh-100" style="background-color: grey;">
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
@@ -29,6 +38,34 @@
               </div>
               <form method="POST" action="/signup">
                 <div class="row gy-3 overflow-hidden">
+                  <div class="col-12">
+                    <div class="form-floating mb-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="firstName"
+                        id="firstName"
+                        placeholder="First Name"
+                        required
+                      />
+                      <label for="firstName" class="form-label"
+                        >First Name</label
+                      >
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="form-floating mb-3">
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="lastName"
+                        id="lastName"
+                        placeholder="Last Name"
+                        required
+                      />
+                      <label for="lastName" class="form-label">Last Name</label>
+                    </div>
+                  </div>
                   <div class="col-12">
                     <div class="form-floating mb-3">
                       <input
