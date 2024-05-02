@@ -3,6 +3,7 @@
 -- Create the ENUM type for difficulty_level
 CREATE TYPE difficulty_level AS ENUM ('easy', 'medium', 'hard');
 
+
 CREATE TABLE IF NOT EXISTS "User" (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(255),

@@ -17,7 +17,7 @@ def get_user_by_id(user_id: int):
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
-            cur.execute('SELECT * FROM "User" WHERE id = %s;', [user_id,])
+            cur.execute('SELECT * FROM "User" WHERE user_id = %s;', [user_id,])
             return cur.fetchone()
         
 def find_user_by_email(email):
@@ -26,7 +26,6 @@ def find_user_by_email(email):
         with conn.cursor(row_factory=dict_row) as cur:
             cur.execute('SELECT user_id, email,  password, username FROM "User" WHERE email = %s;', [email])
             return cur.fetchone()
-
 
 def create_user(first_name, last_name, email, password):
     pool = get_pool()
@@ -56,6 +55,29 @@ def update_user_password(user_id: int, hashed_password: str) -> None:
                         WHERE user_id = %s
                         ''', [hashed_password, user_id])
             
+def delete_user(user_id: int):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('''
+                        DELETE FROM "Users"
+                        WHERE user_id = %s
+                        ''', [user_id])
+            conn.commit()
+            
+def update_user(user_id, username):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('''
+                UPDATE "User"
+                SET username = %s
+                WHERE user_id = %s
+                ''', (username, user_id))
+            conn.commit()
+
+# _______________________________________________________________________________________________
+
 def find_all_posts(limit=15, offset=0):
     pool = get_pool()
     with pool.connection() as conn:

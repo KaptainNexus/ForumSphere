@@ -1,0 +1,19 @@
+{% extends 'new_layout.html' %}
+{% block main %}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Update User Information</h2>
+    <form method="POST" action="{{ url_for('update_user') }}" >
+        <input type="hidden" name="user_id" value="{{ user.user_id }}">
+
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Username</button>
+    </form>
+</div>
+
+{% endblock %}
+
