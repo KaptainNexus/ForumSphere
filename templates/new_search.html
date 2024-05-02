@@ -24,76 +24,47 @@
             >
             <div class="col-sm-10">
               <input
-                type="password"
+                type="text"
                 class="form-control"
-                id="inputPassword"
+                id="search"
                 placeholder="New search"
               />
             </div>
           </div>
         </div>
-        <div class="card mb-3" style="width: 100%">
-          <img
-            class="card-img-top"
-            src="download.jpeg"
-            alt="Card image cap"
-            style="max-height: 200px; width: 100%; object-fit: cover"
-          />
-          <div class="card-body">
-            <h5 class="card-title">Card title Annabella</h5>
-            <p class="card-text">
-              This is a wider card with supporting text below as a natural
-              lead-in to additional content. This content is a little bit
-              longer.
-            </p>
-            <p class="card-text">
-              <small class="text-muted">Last updated 3 mins ago</small>
-            </p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
+        <div class="container mt-5">
+          <div class="container mt-5">
+            <h2>Search Results</h2>
+            <div class="row">
+              <div class="col-md-6">
+                <h3>Users</h3>
+                <ul class="list-group">
+                  {% if results.users %}
+                    {% for user in results.users %}
+                      <li class="list-group-item">{{ user.username }}</li>
+                    {% endfor %}
+                  {% else %}
+                    <li class="list-group-item">No users found</li>
+                  {% endif %}
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <h3>Posts</h3>
+                <ul class="list-group">
+                  {% if results.posts %}
+                    {% for post in results.posts %}
+                      <li class="list-group-item">{{ post.title }}</li>
+                    {% endfor %}
+                  {% else %}
+                    <li class="list-group-item">No posts found</li>
+                  {% endif %}
+                </ul>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="card mb-3" style="width: 100%">
-          <img
-            class="card-img-top"
-            src="download.jpeg"
-            alt="Card image cap"
-            style="max-height: 200px; width: 100%; object-fit: cover"
-          />
-          <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-            <p class="card-text">
-              This is a wider card with supporting text below as a natural
-              lead-in to additional content. This content is a little bit
-              longer.
-            </p>
-            <p class="card-text">
-              <small class="text-muted">Last updated 3 mins ago</small>
-            </p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
-          </div>
-        </div>
-      </div>
     </div>
-
-    <!--Page navigation-->
-    <nav aria-label="Page navigation">
-      <ul class="pagination justify-content-center">
-        <li class="page-item disabled">
-          <a class="page-link" href="#" tabindex="-1">Previous</a>
-        </li>
-        <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item active">
-          <a class="page-link" href="#"
-            >2 <span class="sr-only">(current)</span></a
-          >
-        </li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item">
-          <a class="page-link" href="#">Next</a>
-        </li>
-      </ul>
-    </nav>
   </div>
+</div>
 </main>
 
 {% endblock%}
