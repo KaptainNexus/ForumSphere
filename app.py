@@ -1,6 +1,7 @@
 from flask import Flask, flash, redirect, render_template, request, url_for, request, url_for, session
 from dotenv import load_dotenv
 from repositories import user_repo
+from database import post_db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_bcrypt import Bcrypt
 import os
@@ -252,6 +253,20 @@ def delete_post():
     else:
         flash('Failed to delete the post.')
     return redirect(url_for('fetch_all_posts'))
+
+@app.get('/search')
+def search():
+    query = request.args.get('q', '').strip()
+    if query:
+        user_results = user_repo.search_users(query)
+        post_results = user_repo.search_posts_title(query)
+        results = {
+            'users': user_results,
+            'posts': post_results
+        }
+    else:
+        results = None
+    return redirect(url_for('new_search.html', results=results))
 
 
 if __name__ == "__main__":

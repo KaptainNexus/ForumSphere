@@ -83,3 +83,18 @@ def delete_post_from_db(post_id):
         with conn.cursor() as cur:
             cur.execute('DELETE FROM Post WHERE post_id = %s;', [post_id])
             conn.commit()
+
+def search_users(query: str):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('SELECT * FROM "User" WHERE username ILIKE %s', ['%' + query + '%'])
+            return cur.fetchone()
+
+def search_posts_title(query: str):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=dict_row) as cur:
+            cur.execute('SELECT * FROM Post WHERE title ILIKE %s', ['%' + query + '%'])
+            results = cur.fetchall()
+            return results
