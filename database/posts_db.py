@@ -67,3 +67,14 @@ def delete_post(post_id: int) -> None:
                         WHERE post_id = %s
                         ''', [post_id])
             
+
+def set_post_difficulty(post_id: int, difficulty: str):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('''
+                        UPDATE Post
+                        SET difficulty_level = %s
+                        WHERE post_id = %s
+                        ''', [difficulty, post_id])
+           ''' conn.commit()'''
