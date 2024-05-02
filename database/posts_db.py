@@ -1,6 +1,6 @@
 from psycopg_pool import ConnectionPool
 from typing import Any
-from database.db import get_pool
+from repositories.db import get_pool
 from psycopg.rows import dict_row
 
 def get_all_posts_db() -> list[tuple]:

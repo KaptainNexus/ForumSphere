@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS "User" (
     username VARCHAR(255),
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    want_to_change_password BOOLEAN NOT NULL DEFAULT FALSE;
+    want_to_change_password BOOLEAN NOT NULL DEFAULT FALSE,
     registration_day TIMESTAMP NOT NULL DEFAULT NOW(),
     last_login_day TIMESTAMP NOT NULL DEFAULT NOW()
 );

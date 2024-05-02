@@ -54,9 +54,7 @@ def signup():
 @app.get('/signin')
 def signin():
     return render_template('new_signin.html')
-@app.get('/search')
-def search():
-    return render_template('new_search.html') 
+
 
 @app.get('/create_post')
 def show_create_post_form():
@@ -82,9 +80,14 @@ def create_user():
     last_name = request.form['lastName'].strip()
     email = request.form['email'].strip()
     password = request.form['password'].strip()
+    confirm_password = request.form['confirmPassword'].strip()
 
-    if not (first_name and last_name and email and password):
+    if not (first_name and last_name and email and password and confirm_password):
         flash('All fields are required.')
+        return redirect(url_for('signup'))
+
+    if password != confirm_password:
+        flash('Passwords do not match.')
         return redirect(url_for('signup'))
 
     encrypted_password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -99,6 +102,7 @@ def create_user():
     user_repo.create_user(first_name, last_name, email, encrypted_password)
     flash('Account created successfully, please log in.')
     return redirect(url_for('signin'))
+
 
 @app.get('/signin')
 def show_signin_form():
@@ -252,6 +256,33 @@ def delete_post():
     else:
         flash('Failed to delete the post.')
     return redirect(url_for('fetch_all_posts'))
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    query = request.args.get('q', '').strip()
+    if query:
+        # Search for users whose usernames match the query
+        user_results = user_repo.search_users(query)
+        
+        # Search for posts whose titles match the query
+        post_results_title = user_repo.search_posts_title(query)
+        
+        # Search for posts whose usernames match the query
+        post_results_username = user_repo.search_posts_by_username(query)
+        
+        # Combine post results from title search and username search
+        post_results_combined = post_results_title + post_results_username
+        
+        # Filter posts based on username match
+        post_results_filtered = [post for post in post_results_combined if any(user['user_id'] == post['user_id'] for user in user_results)]
+        
+        results = {
+            'users': user_results,
+            'posts': post_results_filtered
+        }
+    else:
+        results = None
+    return render_template('new_search.html', results=results)
 
 
 if __name__ == "__main__":
