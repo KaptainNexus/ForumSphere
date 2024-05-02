@@ -54,9 +54,7 @@ def signup():
 @app.get('/signin')
 def signin():
     return render_template('new_signin.html')
-@app.get('/search')
-def search():
-    return render_template('new_search.html') 
+
 
 @app.get('/create_post')
 def show_create_post_form():
