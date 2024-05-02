@@ -227,8 +227,9 @@ def reset_password(token):
 def submit_create_post():
     title = request.form['title'].strip()
     content = request.form['content'].strip()
+    difficulty_level = request.form['difficulty_level'].strip()
 
-    if not (title and content):
+    if not (title and content and difficulty_level):
         flash('Both title and content are required.')
         return redirect(url_for('create_post_form'))  # Assuming you have a form at this route
 
@@ -239,7 +240,7 @@ def submit_create_post():
         return redirect(url_for('signin'))
 
     # Create new post in the database
-    post_id = user_repo.create_post(user_id, title, content)
+    post_id = user_repo.create_post(user_id, title, content, difficulty_level)
     if post_id:
         flash('Post created successfully!')
         return redirect(url_for('fetch_all_posts'))  # Redirect to the homepage or another appropriate page
