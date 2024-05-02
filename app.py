@@ -251,15 +251,28 @@ def delete_post():
         flash('Failed to delete the post.')
     return redirect(url_for('fetch_all_posts'))
 
-@app.get('/search')
+@app.route('/search', methods=['GET', 'POST'])
 def search():
     query = request.args.get('q', '').strip()
     if query:
+        # Search for users whose usernames match the query
         user_results = user_repo.search_users(query)
-        post_results = user_repo.search_posts_title(query)
+        
+        # Search for posts whose titles match the query
+        post_results_title = user_repo.search_posts_title(query)
+        
+        # Search for posts whose usernames match the query
+        post_results_username = user_repo.search_posts_by_username(query)
+        
+        # Combine post results from title search and username search
+        post_results_combined = post_results_title + post_results_username
+        
+        # Filter posts based on username match
+        post_results_filtered = [post for post in post_results_combined if any(user['user_id'] == post['user_id'] for user in user_results)]
+        
         results = {
             'users': user_results,
-            'posts': post_results
+            'posts': post_results_filtered
         }
     else:
         results = None

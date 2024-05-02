@@ -1,59 +1,52 @@
 {% extends 'new_layout.html'%} 
 {% block main %}
 
+<main style="width: 80%; margin-left: auto; margin-right: auto">
   {% with messages = get_flashed_messages() %}
-      {% if messages %}
-          <div class="container mt-3">
-              {% for message in messages %}
-                  <div class="alert alert-success" role="alert">{{ message }}</div>
-              {% endfor %}
-          </div>
-      {% endif %}
+    {% if messages %}
+      <div class="container mt-3">
+        {% for message in messages %}
+          <div class="alert alert-success" role="alert">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
   {% endwith %}
 
-<main style="width: 100%">
-  <div class="container-fluid">
-    <div class="justify-content-center">
-      <div style="width: 100%; max-width: 100%">
-        <div>
-          <form action="/search" method="get">
-            <div class="form-group row">
-              <label for="search" class="col-sm-2 col-form-label">Search</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" id="search" name="q" placeholder="Enter your search query">
-              </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Search</button>
-          </form>
+  <div class="justify-content-center">
+    <div style="width: 100%; max-width: 100%">
+      <div class="row">
+        <div class="col-md-6">
+          <h3>Users</h3>
+          <ul class="list-group">
+            {% if results.users %}
+              {% for user in results.users %}
+                <li class="list-group-item">{{ user.username }}</li>
+              {% endfor %}
+            {% else %}
+              <li class="list-group-item">No users found</li>
+            {% endif %}
+          </ul>
         </div>
-        <div class="container mt-5">
-          <h2>Search Results</h2>
-          <div class="row">
-            <div class="col-md-6">
-              <h3>Users</h3>
-              <ul class="list-group">
-                {% if results.users %}
-                  {% for user in results.users %}
-                    <li class="list-group-item">{{ user.username }}</li>
-                  {% endfor %}
-                {% else %}
-                  <li class="list-group-item">No users found</li>
-                {% endif %}
-              </ul>
-            </div>
-            <div class="col-md-6">
-              <h3>Posts</h3>
-              <ul class="list-group">
-                {% if results.posts %}
-                  {% for post in results.posts %}
-                    <li class="list-group-item">{{ post.title }}</li>
-                  {% endfor %}
-                {% else %}
-                  <li class="list-group-item">No posts found</li>
-                {% endif %}
-              </ul>
-            </div>
-          </div>
+        <div class="col-md-6">
+          <h3>Posts</h3>
+          {% if results.posts %}
+            {% for post in results.posts %}
+              <div class="card mb-3" style="width: 100%;">
+                <img class="card-img-top" src="static/download.jpeg" alt="Card image cap" style="max-height: 200px; width: 100%; object-fit: cover;">
+                <div class="card-body">
+                  <h5 class="card-title">{{ post.title }}</h5>
+                  <p class="card-text">{{ post.content }}.</p>
+                  <p class="card-text"><small class="text-muted">Last updated {{ post.last_modified_data }}</small></p>
+                  <form action="{{ url_for('delete_post') }}" method="post">
+                    <input type="hidden" name="post_id" value="{{ post.post_id }}">
+                    <button type="submit" class="btn btn-primary">Delete the article</button>
+                  </form>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p>No posts found.</p>
+          {% endif %}
         </div>
       </div>
     </div>

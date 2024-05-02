@@ -5,7 +5,7 @@ def test_database_connection():
     try:
         # Get the DB_CONNECTION environment variable
         connection_string = os.getenv('DB_CONNECTION')
-        
+        print("Attempting to connect to database:", connection_string)
         # Establish a connection to the database
         connection = psycopg2.connect(connection_string)
         
