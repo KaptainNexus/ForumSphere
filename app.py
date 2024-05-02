@@ -1,7 +1,6 @@
 from flask import Flask, flash, redirect, render_template, request, url_for, request, url_for, session
 from dotenv import load_dotenv
 from repositories import user_repo
-from database import post_db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_bcrypt import Bcrypt
 import os
