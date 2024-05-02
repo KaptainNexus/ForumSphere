@@ -266,7 +266,7 @@ def search():
         }
     else:
         results = None
-    return redirect(url_for('new_search.html', results=results))
+    return render_template('new_search.html', results=results)
 
 
 if __name__ == "__main__":
