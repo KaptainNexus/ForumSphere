@@ -80,9 +80,14 @@ def create_user():
     last_name = request.form['lastName'].strip()
     email = request.form['email'].strip()
     password = request.form['password'].strip()
+    confirm_password = request.form['confirmPassword'].strip()
 
-    if not (first_name and last_name and email and password):
+    if not (first_name and last_name and email and password and confirm_password):
         flash('All fields are required.')
+        return redirect(url_for('signup'))
+
+    if password != confirm_password:
+        flash('Passwords do not match.')
         return redirect(url_for('signup'))
 
     encrypted_password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -97,6 +102,7 @@ def create_user():
     user_repo.create_user(first_name, last_name, email, encrypted_password)
     flash('Account created successfully, please log in.')
     return redirect(url_for('signin'))
+
 
 @app.get('/signin')
 def show_signin_form():
