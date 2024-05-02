@@ -253,7 +253,7 @@ def delete_post():
         flash('Failed to delete the post.')
     return redirect(url_for('fetch_all_posts'))
 
-@app.route('/search')
+@app.get('/search')
 def search():
     query = request.args.get('q', '').strip()
     if query:
