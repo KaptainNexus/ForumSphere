@@ -62,17 +62,6 @@ def search():
 def show_create_post_form():
     return render_template('new_createpost.html')
 
-# @app.get('/profile')
-# def see_profile():
-#     return render_template('new_profilepage.html')
-
-# @app.get('/profile')
-# def see_profile():
-#     user_id = request.form['user_id']
-#     user = user_repo.get_user_by_id(user_id)
-#     session['user_id'] = user['user_id']
-#     return render_template('new_profilepage.html', user_id=user['user_id'])
-
 @app.route('/profile')
 def see_profile():
     user_id = session.get('user_id')  
@@ -86,7 +75,6 @@ def see_profile():
     else:
         flash('No user logged in.')
         return redirect(url_for('show_signin_form')) 
-
 
 @app.get('/message')
 def send_message():
