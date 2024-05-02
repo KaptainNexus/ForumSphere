@@ -64,7 +64,7 @@ def find_all_posts(limit=15, offset=0):
             results = cur.fetchall()
             return results
         
-def create_post(user_id, title, content, difficulty_level='easy'):
+def create_post(user_id, title, content, difficulty_level):
     pool = get_pool()
     with pool.connection() as conn:
         with conn.cursor() as cur:
