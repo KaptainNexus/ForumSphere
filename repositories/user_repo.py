@@ -89,7 +89,7 @@ def search_users(query: str):
     with pool.connection() as conn:
         with conn.cursor(row_factory=dict_row) as cur:
             cur.execute('SELECT * FROM "User" WHERE username ILIKE %s', ['%' + query + '%'])
-            return cur.fetchone()
+            return cur.fetchall()
 
 def search_posts_title(query: str):
     pool = get_pool()
