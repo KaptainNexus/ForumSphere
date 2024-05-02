@@ -1,6 +1,6 @@
 from psycopg_pool import ConnectionPool
 from typing import Any
-from database.db import get_pool
+from repositories.db import get_pool
 from psycopg.rows import dict_row
 
 def get_all_posts_db() -> list[tuple]:
@@ -67,3 +67,14 @@ def delete_post(post_id: int) -> None:
                         WHERE post_id = %s
                         ''', [post_id])
             
+
+def set_post_difficulty(post_id: int, difficulty: str):
+    pool = get_pool()
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('''
+                        UPDATE Post
+                        SET difficulty_level = %s
+                        WHERE post_id = %s
+                        ''', [difficulty, post_id])
+           ''' conn.commit()'''
