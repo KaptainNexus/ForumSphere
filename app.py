@@ -1,6 +1,6 @@
 from flask import Flask, flash, redirect, render_template, request, url_for, request, url_for, session
 from dotenv import load_dotenv
-from repositories import user_repo
+from repositories import user_repo, posts_repo 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_bcrypt import Bcrypt
 import os
@@ -60,14 +60,23 @@ def signin():
 def show_create_post_form():
     return render_template('new_createpost.html')
 
-@app.get('/profile')
+@app.route('/profile')
 def see_profile():
-    return render_template('new_profilepage.html')
+    user_id = session.get('user_id')  
+    if user_id:
+        user = user_repo.get_user_by_id(user_id)
+        if user:
+            return render_template('new_profilepage.html', user=user)
+        else:
+            flash('User not found.')
+            return redirect(url_for('show_signin_form'))  
+    else:
+        flash('No user logged in.')
+        return redirect(url_for('show_signin_form')) 
 
 @app.get('/message')
 def send_message():
     return render_template('new_message.html')
-
 
 @app.get('/<int:user_id>')
 def see_user(user_id):
@@ -290,3 +299,64 @@ if __name__ == "__main__":
     print("FLASK_ENV:", os.environ.get("FLASK_ENV"))
     print("Debug mode:", app.debug)
     app.run(port=5003)
+
+@app.post('/delete_user')
+def delete_user():
+    user_id = request.form['user_id']
+    if user_id:
+        user_repo.delete_user(user_id)
+        flash('User deleted successfully!')
+    else:
+        flash('Failed to delete the user.')
+    return redirect(url_for('fetch_all_posts'))
+
+
+# Redirect to the edit user form
+@app.get('/edit_user/<int:user_id>')
+def edit_user_form(user_id):
+    user = user_repo.get_user_by_id(user_id) 
+    if user:
+        return render_template('edit_user_form.html', user=user)
+    else:
+        flash('User not found.')
+        return redirect(url_for('new_profilepage.html')) 
+
+@app.get('/edit_post/<int:post_id>')
+def edit_post_form(post_id):
+    post = posts_repo.get_post_by_id(post_id)  
+    if post:
+        return render_template('edit_post_form.html', post=post)
+    else:
+        flash('Post not found.')
+        return redirect(url_for('new_index.html')) 
+
+@app.post('/update_post')
+def update_post():
+    post_id = request.form.get('post_id')
+    title = request.form.get('title')
+    content = request.form.get('content')
+    # print(post_id, title, content)
+    if post_id and title and content:
+        success = posts_repo.update_post(post_id, title, content)
+        if success:
+            flash('Post updated successfully!')
+        else:
+            flash('Failed to update the post. Please try again.')
+    else:
+        flash('Failed to update the post: Missing data')
+    return redirect(url_for('fetch_all_posts'))
+
+@app.post('/update_user')
+def update_user():
+    user_id = request.form.get('user_id')
+    username = request.form.get('username')
+    if user_id and username:
+        updated = user_repo.update_user(user_id, username)  
+        session['username'] = user_repo.get_user_by_id(user_id).get('username')
+        if updated:
+            flash('User updated successfully!')
+        else:
+            flash('Failed to update the user.')
+    else:
+        flash('Invalid user ID.')
+    return redirect(url_for("see_profile"))

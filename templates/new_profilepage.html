@@ -24,7 +24,7 @@
 
                   </div>
                   {% if 'username' in session %}
-    <h4 class="mb-2">{{ session['username'] }}</h4>
+    <h4 class="mb-2">{{ session['username'] }} </h4>
 {% else %}
     <h4 class="mb-2">Guest</h4>  <!-- Default text if not logged in -->
 {% endif %}
@@ -49,6 +49,12 @@
       <div class="col-12">
           <a href="/delete_user" class="btn btn-primary btn-rounded btn-lg mb-3 btn-block" role="button">
               Delete user
+          </a>
+      </div>
+      <div class="col-12">
+            
+          <a href="{{ url_for('edit_user_form', user_id=user.user_id) }}" class="btn btn-primary btn-rounded btn-lg mb-3 btn-block" role="button">
+              Update User
           </a>
       </div>
   </div>
