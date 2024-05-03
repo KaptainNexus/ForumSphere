@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/postgres</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="forumshpere@dpg-coq2nkn79t8c7388q6v0-a.oregon-postgres.render.com" uuid="1771ec11-b896-46e2-91b0-816406cd0714">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://dpg-coq2nkn79t8c7388q6v0-a.oregon-postgres.render.com:5432/forumshpere</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

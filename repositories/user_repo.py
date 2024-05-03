@@ -50,7 +50,7 @@ def update_user_password(user_id: int, hashed_password: str) -> None:
     with pool.connection() as conn:
         with conn.cursor() as cur:
             cur.execute('''
-                        UPDATE users
+                        UPDATE "User"
                         SET password = %s
                         WHERE user_id = %s
                         ''', [hashed_password, user_id])
